@@ -1,10 +1,9 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { getJson } from '../api/client.js';
 
 type Props<T> = {
   title: string;
   description: string;
-  endpoint: string;
+  load: () => Promise<T>;
   emptyMessage: string;
   isEmpty: (data: T) => boolean;
   children: (data: T) => ReactNode;
@@ -15,13 +14,13 @@ type RequestState<T> =
   | { status: 'success'; data: T }
   | { status: 'error'; message: string };
 
-export function CapabilityCard<T>({ title, description, endpoint, emptyMessage, isEmpty, children }: Props<T>) {
+export function CapabilityCard<T>({ title, description, load, emptyMessage, isEmpty, children }: Props<T>) {
   const [request, setRequest] = useState<RequestState<T>>({ status: 'loading' });
 
   useEffect(() => {
     let active = true;
     setRequest({ status: 'loading' });
-    getJson<T>(endpoint)
+    load()
       .then((data) => {
         if (active) setRequest({ status: 'success', data });
       })
@@ -36,7 +35,7 @@ export function CapabilityCard<T>({ title, description, endpoint, emptyMessage, 
     return () => {
       active = false;
     };
-  }, [endpoint]);
+  }, [load]);
 
   return (
     <section className="card h-100">

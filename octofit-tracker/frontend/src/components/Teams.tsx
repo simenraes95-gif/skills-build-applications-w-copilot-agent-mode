@@ -1,3 +1,4 @@
+import { getJson } from '../api/client.js';
 import { CapabilityCard } from './CapabilityCard.js';
 
 type Team = { _id?: string; name: string; members: string[] };
@@ -8,7 +9,7 @@ export default function Teams() {
     <CapabilityCard<TeamResponse>
       title="Teams"
       description="Manage teams and members."
-      endpoint="/api/teams"
+      load={() => getJson<TeamResponse>('/api/teams')}
       emptyMessage="No teams yet."
       isEmpty={(data) => data.teams.length === 0}
     >
